@@ -68,13 +68,27 @@ Un système de dashboards en temps réel pour la gestion et le monitoring des KP
 - **Logrotate** gestion des logs
 
 #### Déploiement AWS (Production)
-- **ECS sur EC2** avec Auto Scaling pour les conteneurs
+**Architecture optimisée pour usage faible (< 5 utilisateurs/jour)**
+
+**Option 1: Standard ECS** (~$40-45/mois)
+- **ECS sur EC2** avec Auto Scaling (t3.small instances)
 - **Application Load Balancer** avec SSL termination
 - **AWS Certificate Manager** certificats automatiques
 - **CloudWatch** monitoring et logs centralisés
 - **AWS Secrets Manager** gestion sécurisée des credentials
 - **EFS** stockage persistant
 - **Auto Scaling Group** gestion automatique des instances
+
+**Option 2: Cost-Optimized** (~$30-35/mois)
+- Configuration ECS allégée avec scaling nocturne (arrêt 2h-7h)
+- Instances t3.small avec auto-scaling adaptatif
+- Retention logs réduite (7 jours)
+- Alertes budget configurées
+
+**Option 3: Ultra-Economique** (~$20-25/mois)
+- Instance EC2 unique avec Docker Compose
+- Sans ALB (accès direct)
+- Configuration minimaliste
 
 ### Services Externes
 - **Google Sheets API** pour les données de planification
@@ -104,7 +118,7 @@ Voir [Guide AWS](aws/README-AWS.md) pour les instructions détaillées.
 
 1. **Cloner le repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/fredNketch/agrifrika-dashboard.git
    cd agrifrika-dashboard
    ```
 
@@ -144,16 +158,29 @@ Voir [Guide AWS](aws/README-AWS.md) pour les instructions détaillées.
    aws configure  # Configurer credentials
    ```
 
-2. **Déploiement automatique sur EC2**
+2. **Déploiement automatique optimisé pour faible usage**
    ```bash
+   # Option 1: Standard ECS (~$40-45/mois)
    chmod +x aws/scripts/deploy-aws.sh
    ./aws/scripts/deploy-aws.sh production us-east-1 votre-domaine.com
+
+   # Option 2: Cost-Optimized (~$30-35/mois)
+   aws cloudformation deploy \
+     --template-file aws/cloudformation/cost-optimized.yml \
+     --stack-name agrifrika-cost-optimized \
+     --capabilities CAPABILITY_IAM
+
+   # Option 3: Ultra-Economique (~$20-25/mois)
+   chmod +x aws/scripts/simple-ec2-deploy.sh
+   ./aws/scripts/simple-ec2-deploy.sh production us-east-1 votre-domaine.com
    ```
 
-3. **Configuration des secrets**
-   - Aller dans AWS Secrets Manager
-   - Mettre à jour les credentials dans le secret créé
-   - Voir [Guide AWS](aws/README-AWS.md) pour les détails
+3. **Configuration optimisée pour coûts**
+   - **Secrets AWS**: Configuration automatique via scripts
+   - **Scaling nocturne**: Arrêt automatique 2h-7h (Option 2)
+   - **Instances Spot**: Jusqu'à 70% d'économie (optionnel)
+   - **Monitoring minimal**: Alertes essentielles uniquement
+   - Voir [Guide AWS](aws/README-AWS.md) et [Optimisations](aws/LOW-TRAFFIC-OPTIMIZATION.md)
 
 ### Configuration Avancée
 
@@ -395,10 +422,18 @@ tail -f logs/metrics/system-metrics.log
 
 ### Métriques
 
+**Configuration Standard** (t3.small instances)
 - **Temps de réponse**: < 2s pour les dashboards complets
-- **Consommation mémoire**: < 512MB par conteneur
-- **CPU**: < 50% en charge normale
-- **Stockage**: Rotation automatique des logs
+- **Backend**: 256 CPU units, 512MB RAM
+- **Frontend**: 128 CPU units, 256MB RAM
+- **Instances EC2**: t3.small (2 vCPU, 2GB RAM)
+- **Auto-scaling**: 1-2 instances max (optimisé pour < 5 utilisateurs/jour)
+- **Stockage**: Rotation automatique des logs (7-14 jours)
+
+**Coûts estimés selon l'option**:
+- Standard ECS: $40-45/mois
+- Cost-Optimized: $30-35/mois
+- Ultra-Economique: $20-25/mois
 
 ## Contribution
 
@@ -433,8 +468,39 @@ MIT License - voir le fichier [LICENSE](LICENSE) pour les détails.
 - **API docs**: https://yourdomain.com/docs
 - **Monitoring**: https://yourdomain.com/metrics
 
+## Optimisations Spécifiques
+
+### Pour Usage Faible (< 5 utilisateurs/jour)
+
+**Recommandations**:
+- **Instance type**: t3.small (optimal coût/performance)
+- **Scaling strategy**: Conservateur (1-2 instances max)
+- **Monitoring**: Alertes adaptées (CPU > 60%, budget > $50)
+- **Logs retention**: 7 jours (économie de stockage)
+- **Spot instances**: Considérer pour 70% d'économie
+
+**Scripts de gestion**:
+```bash
+# Gestion du scaling EC2
+./aws/scripts/manage-ec2-scaling.sh status
+./aws/scripts/manage-ec2-scaling.sh scale-in 1
+
+# Monitoring des coûts
+aws ce get-cost-and-usage --time-period Start=2024-01-01,End=2024-01-31
+
+# Optimisation continue
+./aws/scripts/cost-optimizer.sh monitor
+```
+
+**Documentation spécialisée**:
+- [Guide AWS Complet](aws/README-AWS.md)
+- [Optimisations Usage Faible](aws/LOW-TRAFFIC-OPTIMIZATION.md)
+- [Checklist Déploiement](AWS-DEPLOYMENT-CHECKLIST.md)
+
 ---
 
 **Version**: 1.0.0
-**Dernière mise à jour**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+**Architecture**: ECS sur EC2 (t3.small)
+**Optimisé pour**: Usage faible (< 5 utilisateurs/jour)
+**Coût estimé**: $20-45/mois selon l'option choisie
 **Environnement**: Production Ready
