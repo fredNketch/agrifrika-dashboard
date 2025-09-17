@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo-agrifrika.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/logo-agrifrika.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo-agrifrika.png" />
+    <link rel="shortcut icon" href="/logo-agrifrika.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#4CAF50" />
+    <meta name="description" content="AGRIFRIKA Dashboards - Tableaux de bord stratégiques et opérationnels" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agrifrika.com/" />
+    <meta property="og:title" content="AGRIFRIKA Dashboards" />
+    <meta property="og:description" content="Tableaux de bord stratégiques et opérationnels pour AGRIFRIKA" />
+    <meta property="og:image" content="/logo-agrifrika.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://agrifrika.com/" />
+    <meta property="twitter:title" content="AGRIFRIKA Dashboards" />
+    <meta property="twitter:description" content="Tableaux de bord stratégiques et opérationnels pour AGRIFRIKA" />
+    <meta property="twitter:image" content="/logo-agrifrika.png" />
+    
+    <title>AGRIFRIKA Dashboards</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        background: #f3f4f6;
+        margin: 0;
+        padding: 2rem;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+      .logo-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 16px;
+        overflow: hidden;
+      }
+      .logo-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .dashboard-link {
+        display: block;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #334155;
+        transition: all 0.2s;
+      }
+      .dashboard-link:hover {
+        border-color: #4CAF50;
+        background: #f0fdf4;
+      }
+      .dashboard-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .dashboard-desc {
+        font-size: 14px;
+        color: #64748b;
+      }
+      .note {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-top: 2rem;
+        font-size: 14px;
+        color: #1e40af;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <div class="logo-icon">
+          <img src="/logo-agrifrika.png" alt="AGRIFRIKA Logo" />
+        </div>
+        <div>
+          <h1 style="margin: 0; color: #1e293b;">AGRIFRIKA</h1>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">Sélectionnez le dashboard à afficher</p>
+        </div>
+      </div>
+
+      <a href="/src/dashboard1/" class="dashboard-link">
+        <div class="dashboard-title">Dashboard 1 - KPI Stratégiques</div>
+        <div class="dashboard-desc">
+          Écran 1 • Default Alive • Public Engagement • Fundraising Pipeline
+        </div>
+      </a>
+
+      <a href="/src/dashboard2/" class="dashboard-link">
+        <div class="dashboard-title">Dashboard 2 - Opérationnel</div>
+        <div class="dashboard-desc">
+          Écran 2 • Équipe • Planning • Cash Flow • Actions • Basecamp • Vidéo Facebook
+        </div>
+      </a>
+
+      <div class="note">
+        <strong>Instructions pour écrans 32" :</strong><br>
+        • Ouvrir chaque dashboard dans un navigateur séparé<br>
+        • Passer en mode plein écran (F11)<br>
+        • Dashboard 1 → Écran gauche • Dashboard 2 → Écran droite
+      </div>
+    </div>
+  </body>
+</html>

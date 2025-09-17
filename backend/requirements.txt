@@ -1,0 +1,43 @@
+# FastAPI et dépendances core
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# CORS et middleware
+python-multipart==0.0.6
+
+# Gestion des variables d'environnement
+python-dotenv==1.0.0
+
+# APIs externes
+requests==2.31.0
+facebook-sdk==3.1.0
+httpx==0.25.2
+
+# Google APIs
+google-api-python-client==2.108.0
+google-auth==2.23.4
+google-oauth2-tool==0.0.3
+google-analytics-data==0.17.4
+
+# Base de données (optionnel pour cache)
+sqlalchemy==2.0.23
+sqlite3  # Inclus avec Python
+
+# Utilitaires
+python-dateutil==2.8.2
+pytz==2023.3
+schedule==1.2.0
+
+# Développement et tests
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0
+
+# Sécurité
+cryptography==41.0.7
+
+# Documentation API
+pydantic[email]==2.5.0

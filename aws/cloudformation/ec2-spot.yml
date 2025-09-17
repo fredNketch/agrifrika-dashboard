@@ -1,0 +1,237 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Agrifrika Dashboard - EC2 Spot Instances Configuration (Optional Cost Optimization)'
+
+Parameters:
+  StackName:
+    Type: String
+    Description: Infrastructure stack name
+    Default: agrifrika-infrastructure
+
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+
+  SpotMaxPrice:
+    Type: String
+    Default: "0.02"
+    Description: Maximum price per hour for Spot instances (USD) - t3.small typically ~$0.0104/hour
+
+Resources:
+  # Launch Template for Spot Instances
+  SpotLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Sub ${AWS::StackName}-spot-template
+      LaunchTemplateData:
+        ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2 ECS-optimized AMI
+        InstanceType: t3.small
+        IamInstanceProfile:
+          Arn: !ImportValue
+            Fn::Sub: ${StackName}-instance-profile
+        SecurityGroupIds:
+          - !ImportValue
+            Fn::Sub: ${StackName}-ecs-sg
+        InstanceMarketOptions:
+          MarketType: spot
+          SpotOptions:
+            MaxPrice: !Ref SpotMaxPrice
+            SpotInstanceType: persistent
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            echo ECS_CLUSTER=${StackName}-cluster >> /etc/ecs/ecs.config
+            echo ECS_ENABLE_TASK_IAM_ROLE=true >> /etc/ecs/ecs.config
+            echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config
+            yum update -y
+            yum install -y amazon-cloudwatch-agent
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Sub ${AWS::StackName}-spot-instance
+              - Key: InstanceType
+                Value: spot
+
+  # Mixed Instances Auto Scaling Group
+  MixedInstancesAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub ${AWS::StackName}-mixed-asg
+      MixedInstancesPolicy:
+        LaunchTemplate:
+          LaunchTemplateSpecification:
+            LaunchTemplateId: !ImportValue
+              Fn::Sub: ${StackName}-launch-template
+            Version: !GetAtt SpotLaunchTemplate.LatestVersionNumber
+          Overrides:
+            - InstanceType: t3.small
+              WeightedCapacity: 1
+            - InstanceType: t3.medium
+              WeightedCapacity: 2
+        InstancesDistribution:
+          OnDemandAllocationStrategy: prioritized
+          OnDemandBaseCapacity: 1
+          OnDemandPercentageAboveBaseCapacity: 20
+          SpotAllocationStrategy: capacity-optimized
+          SpotInstancePools: 4
+          SpotMaxPrice: !Ref SpotMaxPrice
+      MinSize: 1
+      MaxSize: 2
+      DesiredCapacity: 1
+      VPCZoneIdentifier:
+        - !ImportValue
+          Fn::Sub: ${StackName}-public-subnet-1
+        - !ImportValue
+          Fn::Sub: ${StackName}-public-subnet-2
+      HealthCheckType: ELB
+      HealthCheckGracePeriod: 300
+      DefaultCooldown: 300
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-mixed-instance
+          PropagateAtLaunch: true
+        - Key: Environment
+          Value: !Ref Environment
+          PropagateAtLaunch: true
+
+  # Capacity Provider for Mixed Instances
+  MixedCapacityProvider:
+    Type: AWS::ECS::CapacityProvider
+    Properties:
+      Name: !Sub ${AWS::StackName}-mixed-cp
+      AutoScalingGroupProvider:
+        AutoScalingGroupArn: !Ref MixedInstancesAutoScalingGroup
+        ManagedScaling:
+          Status: ENABLED
+          TargetCapacity: 80
+          MinimumScalingStepSize: 1
+          MaximumScalingStepSize: 4
+        ManagedTerminationProtection: ENABLED
+
+  # Spot Instance Draining Lambda
+  SpotDrainingLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: ECSSpotDraining
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:ListContainerInstances
+                  - ecs:UpdateContainerInstancesState
+                  - ecs:ListTasks
+                  - ecs:StopTask
+                  - ec2:DescribeInstances
+                Resource: "*"
+
+  SpotDrainingLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-spot-draining
+      Runtime: python3.9
+      Handler: index.lambda_handler
+      Role: !GetAtt SpotDrainingLambdaRole.Arn
+      Timeout: 300
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          import logging
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              try:
+                  ecs = boto3.client('ecs')
+                  ec2 = boto3.client('ec2')
+
+                  # Parse the CloudWatch event
+                  detail = event['detail']
+                  instance_id = detail['instance-id']
+
+                  logger.info(f"Processing spot interruption for instance {instance_id}")
+
+                  # Find ECS cluster and container instance
+                  clusters = ecs.list_clusters()['clusterArns']
+
+                  for cluster_arn in clusters:
+                      container_instances = ecs.list_container_instances(
+                          cluster=cluster_arn,
+                          status='ACTIVE'
+                      )['containerInstanceArns']
+
+                      for ci_arn in container_instances:
+                          ci_details = ecs.describe_container_instances(
+                              cluster=cluster_arn,
+                              containerInstances=[ci_arn]
+                          )['containerInstances'][0]
+
+                          if ci_details['ec2InstanceId'] == instance_id:
+                              logger.info(f"Found container instance {ci_arn} on {instance_id}")
+
+                              # Drain the container instance
+                              ecs.update_container_instances_state(
+                                  cluster=cluster_arn,
+                                  containerInstances=[ci_arn],
+                                  status='DRAINING'
+                              )
+
+                              logger.info(f"Container instance {ci_arn} set to DRAINING")
+                              return {'statusCode': 200}
+
+                  logger.warning(f"Container instance not found for {instance_id}")
+                  return {'statusCode': 404}
+
+              except Exception as e:
+                  logger.error(f"Error processing spot interruption: {str(e)}")
+                  return {'statusCode': 500}
+
+  # EventBridge rule for Spot interruptions
+  SpotInterruptionRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Handle EC2 Spot Instance interruption warnings
+      EventPattern:
+        source: ["aws.ec2"]
+        detail-type: ["EC2 Spot Instance Interruption Warning"]
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt SpotDrainingLambda.Arn
+          Id: SpotDrainingTarget
+
+  # Permission for EventBridge to invoke Lambda
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref SpotDrainingLambda
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt SpotInterruptionRule.Arn
+
+Outputs:
+  MixedInstancesASG:
+    Description: Mixed Instances Auto Scaling Group
+    Value: !Ref MixedInstancesAutoScalingGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-mixed-asg
+
+  MixedCapacityProvider:
+    Description: Mixed Capacity Provider
+    Value: !Ref MixedCapacityProvider
+    Export:
+      Name: !Sub ${AWS::StackName}-mixed-cp
+
+  SpotDrainingLambda:
+    Description: Spot Instance Draining Lambda Function
+    Value: !Ref SpotDrainingLambda

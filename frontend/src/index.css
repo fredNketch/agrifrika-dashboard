@@ -1,0 +1,532 @@
+@import './styles/design-tokens.css';
+@import './styles/dark-theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optimisation responsive pour différentes tailles d'écran */
+@media screen and (min-width: 475px) {
+  .dashboard-card {
+    @apply p-4;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .dashboard-card {
+    @apply p-5;
+  }
+  
+  .dashboard-grid {
+    gap: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .dashboard-card {
+    @apply p-6;
+  }
+  
+  .dashboard-grid {
+    gap: 2rem;
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  .dashboard-card {
+    @apply text-32screen p-8 rounded-3xl shadow-modern-xl;
+    min-height: 250px;
+  }
+  
+  .dashboard-title {
+    @apply text-32screen-xl font-bold;
+  }
+  
+  .member-name {
+    @apply text-32screen-xl font-semibold;
+  }
+  
+  .progress-bar {
+    @apply h-5 rounded-lg;
+  }
+  
+  .dashboard2-grid {
+    gap: 2.5rem;
+  }
+  
+  .dashboard2-content {
+    padding: 2rem;
+  }
+}
+
+/* Animations personnalisées modernes */
+.dashboard-card {
+  @apply transition-all duration-300 ease-in-out;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Indicateurs de défilement séquentiel */
+.scroll-indicator {
+  @apply absolute top-2 right-2 z-10 flex space-x-1;
+}
+
+.scroll-indicator-dot {
+  @apply w-2 h-2 rounded-full transition-all duration-300;
+}
+
+.scroll-indicator-dot.active {
+  @apply bg-blue-500 shadow-lg;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.scroll-indicator-dot.inactive {
+  @apply bg-gray-300 opacity-60;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  }
+}
+
+/* Styles pour défilement intelligent */
+.smart-scroll-indicator {
+  @apply absolute top-1 right-1 z-10 flex items-center space-x-1;
+}
+
+/* Status colors */
+.scroll-status-paused {
+  @apply bg-orange-400;
+}
+
+.scroll-status-scrolling {
+  @apply bg-green-400 animate-pulse;
+}
+
+.scroll-status-resetting {
+  @apply bg-blue-400;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-custom {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-indicator {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.status-available {
+  @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+}
+
+.status-occupied {
+  @apply bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200;
+}
+
+.status-unavailable {
+  @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+/* Personnalisation pour dashboard - Mode Kiosque responsive */
+body {
+  @apply bg-gradient-to-br from-gray-50 to-gray-100 font-sans antialiased;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  transition: background-color 0.3s ease;
+}
+
+body.dark {
+  background: radial-gradient(ellipse at top, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+html {
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Adaptation mobile */
+@media screen and (max-width: 768px) {
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  html {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.kpi-value {
+  @apply text-3xl lg:text-4xl font-bold text-gray-800;
+}
+
+.kpi-label {
+  @apply text-xs lg:text-base font-medium text-gray-600;
+}
+
+/* Progress bars modernes */
+.progress-container {
+  @apply relative w-full bg-gray-200 rounded-full overflow-hidden;
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+.progress-bar-fill {
+  @apply h-full transition-all duration-700 ease-out rounded-full;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+/* Barres de progression avec animation */
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+}
+
+.progress-animated {
+  animation: progressFill 1.5s ease-out;
+}
+
+/* Shimmer effect for premium cards */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Cards avec ombres et bordures modernes - Mode Kiosque */
+.card-shadow {
+  @apply rounded-2xl shadow-modern hover:shadow-modern-lg transition-all duration-300;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  backdrop-filter: blur(10px);
+}
+
+.dark .card-shadow {
+  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  @apply shadow-modern-lg hover:shadow-modern-xl;
+  backdrop-filter: blur(15px);
+}
+
+/* Dashboard en mode kiosque - Aucun scroll */
+.dashboard-card {
+  @apply p-3;
+  min-height: 0; /* Permet au flex de réduire les cards si nécessaire */
+  max-height: 100%;
+}
+
+.dashboard-content {
+  min-height: 0; /* Important pour flexbox overflow */
+  max-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.dashboard-content::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Dashboard 1 spécifique - Layout split professionnel */
+.dashboard1-layout {
+  background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+.dark .dashboard1-layout {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+}
+
+/* Dashboard 2 spécifique - amélioration esthétique moderne */
+.dashboard2-layout {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+.dark .dashboard2-layout {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+}
+
+.dashboard2-card {
+  @apply bg-white rounded-2xl shadow-modern border border-gray-200 p-2;
+  backdrop-filter: blur(20px);
+  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+  transition: all 0.3s ease;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.dark .dashboard2-card {
+  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(25px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard2-card:hover {
+  transform: translateY(-1px);
+  @apply shadow-modern-lg;
+}
+
+.dark .dashboard2-card:hover {
+  @apply shadow-modern-xl;
+}
+
+/* Réduction globale des textes de 25% pour tous les dashboards */
+.text-reduced {
+  font-size: 75%;
+}
+
+.text-reduced .text-xs {
+  font-size: 0.5625rem; /* 0.75rem * 0.75 */
+}
+
+.text-reduced .text-sm {
+  font-size: 0.65625rem; /* 0.875rem * 0.75 */
+}
+
+.text-reduced .text-base {
+  font-size: 0.75rem; /* 1rem * 0.75 */
+}
+
+.text-reduced .text-lg {
+  font-size: 0.84375rem; /* 1.125rem * 0.75 */
+}
+
+.text-reduced .text-xl {
+  font-size: 0.9375rem; /* 1.25rem * 0.75 */
+}
+
+.text-reduced .text-2xl {
+  font-size: 1.125rem; /* 1.5rem * 0.75 */
+}
+
+.text-reduced .text-3xl {
+  font-size: 1.40625rem; /* 1.875rem * 0.75 */
+}
+
+.text-reduced .text-4xl {
+  font-size: 1.6875rem; /* 2.25rem * 0.75 */
+}
+
+.text-reduced .text-5xl {
+  font-size: 2.25rem; /* 3rem * 0.75 */
+}
+
+.text-reduced .text-6xl {
+  font-size: 2.8125rem; /* 3.75rem * 0.75 */
+}
+
+/* Styles compacts pour Dashboard 2 */
+.dashboard2-compact .dashboard-card {
+  @apply p-1;
+  min-height: 0;
+  max-height: 100%;
+  height: 100%;
+}
+
+/* Hauteur fixe pour les blocs Dashboard 2 - 2x hauteur header */
+.dashboard2-block-height {
+  height: 6rem; /* 96px = 2x header height */
+}
+
+/* Optimisation des contenus pour hauteur fixe */
+.dashboard2-compact .dashboard-content {
+  font-size: 0.65rem; /* Encore plus compact */
+  line-height: 1.2;
+  padding: 0.25rem;
+}
+
+.dashboard2-compact h3 {
+  font-size: 0.7rem;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard2-compact h4 {
+  font-size: 0.65rem;
+  margin-bottom: 0.2rem;
+}
+
+.dashboard2-compact .text-lg {
+  font-size: 0.7rem;
+}
+
+.dashboard2-compact .text-xl {
+  font-size: 0.8rem;
+}
+
+.dashboard2-compact .text-2xl {
+  font-size: 0.85rem;
+}
+
+.dashboard2-compact .dashboard-content {
+  font-size: 0.6rem; /* 0.8rem * 0.75 */
+  line-height: 1.3;
+}
+
+.dashboard2-compact h3,
+.dashboard2-compact h4 {
+  font-size: 0.75rem; /* text-sm réduit */
+}
+
+.dashboard2-compact .text-lg {
+  font-size: 0.75rem; /* 1rem * 0.75 */
+}
+
+.dashboard2-compact .text-xl {
+  font-size: 0.84375rem; /* 1.125rem * 0.75 */
+}
+
+.dashboard2-compact .text-2xl {
+  font-size: 0.9375rem; /* 1.25rem * 0.75 */
+}
+
+/* Amélioration responsive complète */
+@media screen and (max-width: 475px) {
+  .dashboard2-card {
+    @apply rounded-xl shadow-md mx-2;
+  }
+  
+  .dashboard2-grid {
+    gap: 0.75rem;
+    padding: 0.5rem;
+  }
+}
+
+@media screen and (min-width: 475px) and (max-width: 768px) {
+  .dashboard2-card {
+    @apply rounded-2xl shadow-md;
+  }
+  
+  .dashboard2-grid {
+    gap: 1rem;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .dashboard2-card {
+    @apply rounded-2xl shadow-lg;
+  }
+  
+  .dashboard2-grid {
+    gap: 1.25rem;
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  .dashboard2-card {
+    @apply rounded-3xl shadow-modern-xl;
+  }
+  
+  .dashboard2-grid {
+    gap: 2rem;
+  }
+}
+
+/* Styles pour le lecteur Facebook */
+.facebook-video-player {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.facebook-video-player .fb-video {
+  width: 100%;
+  height: 100%;
+}
+
+.facebook-video-player .fb-video iframe {
+  border: none;
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+}
+
+.facebook-video-player.loading {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+.facebook-video-player.error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+/* Responsive pour le lecteur Facebook */
+@media (max-width: 768px) {
+  .-video-player {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16/9;
+  }
+  
+  .facebook-video-player .fb-video {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Animation pour le bouton play */
+.play-button {
+  transition: all 0.3s ease;
+}
+
+.play-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* Styles pour le mode sombre */
+.dark .facebook-video-player {
+  background: #1f2937;
+}
+
+.dark .facebook-video-player.loading {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+}
+
+.dark .facebook-video-player.error {
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+}

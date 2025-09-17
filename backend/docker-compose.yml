@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  agrifrika-dashboard-api:
+    build: .
+    container_name: agrifrika-dashboard-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - HOST=0.0.0.0
+      - PORT=8000
+    volumes:
+      - ./credentials:/app/credentials:ro
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - agrifrika-network
+
+  # Service optionnel de reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: agrifrika-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - agrifrika-dashboard-api
+    restart: unless-stopped
+    networks:
+      - agrifrika-network
+
+networks:
+  agrifrika-network:
+    driver: bridge
+
+volumes:
+  agrifrika-logs:
+  agrifrika-credentials:

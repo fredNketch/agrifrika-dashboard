@@ -1,0 +1,171 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Agrifrika Dashboard - Cost Optimized Configuration for Low Traffic'
+
+Parameters:
+  StackName:
+    Type: String
+    Description: Infrastructure stack name
+    Default: agrifrika-infrastructure
+
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+
+Resources:
+  # Single Instance Launch Template (t3.small)
+  CostOptimizedLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Sub ${AWS::StackName}-cost-optimized
+      LaunchTemplateData:
+        ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2 ECS-optimized AMI
+        InstanceType: t3.small
+        IamInstanceProfile:
+          Arn: !ImportValue
+            Fn::Sub: ${StackName}-instance-profile
+        SecurityGroupIds:
+          - !ImportValue
+            Fn::Sub: ${StackName}-ecs-sg
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            echo ECS_CLUSTER=${StackName}-cluster >> /etc/ecs/ecs.config
+            echo ECS_ENABLE_TASK_IAM_ROLE=true >> /etc/ecs/ecs.config
+            echo ECS_RESERVED_MEMORY=256 >> /etc/ecs/ecs.config
+            echo ECS_AVAILABLE_LOGGING_DRIVERS='["json-file","awslogs"]' >> /etc/ecs/ecs.config
+            yum update -y
+            # Install CloudWatch agent for basic monitoring
+            yum install -y amazon-cloudwatch-agent
+            # Optimize for small instance
+            echo 'vm.swappiness=10' >> /etc/sysctl.conf
+            sysctl -p
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Sub ${AWS::StackName}-cost-optimized
+              - Key: Environment
+                Value: !Ref Environment
+              - Key: CostCenter
+                Value: agrifrika-low-traffic
+
+  # Cost Optimized Auto Scaling Group
+  CostOptimizedASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub ${AWS::StackName}-cost-asg
+      LaunchTemplate:
+        LaunchTemplateId: !Ref CostOptimizedLaunchTemplate
+        Version: !GetAtt CostOptimizedLaunchTemplate.LatestVersionNumber
+      MinSize: 1
+      MaxSize: 2
+      DesiredCapacity: 1
+      VPCZoneIdentifier:
+        - !ImportValue
+          Fn::Sub: ${StackName}-public-subnet-1
+        - !ImportValue
+          Fn::Sub: ${StackName}-public-subnet-2
+      HealthCheckType: ELB
+      HealthCheckGracePeriod: 300
+      DefaultCooldown: 600  # Longer cooldown for cost optimization
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-cost-optimized
+          PropagateAtLaunch: true
+        - Key: Environment
+          Value: !Ref Environment
+          PropagateAtLaunch: true
+        - Key: CostOptimized
+          Value: "true"
+          PropagateAtLaunch: true
+
+  # Cost Optimized Capacity Provider
+  CostOptimizedCapacityProvider:
+    Type: AWS::ECS::CapacityProvider
+    Properties:
+      Name: !Sub ${AWS::StackName}-cost-cp
+      AutoScalingGroupProvider:
+        AutoScalingGroupArn: !Ref CostOptimizedASG
+        ManagedScaling:
+          Status: ENABLED
+          TargetCapacity: 85  # Higher target for single instance
+          MinimumScalingStepSize: 1
+          MaximumScalingStepSize: 1
+        ManagedTerminationProtection: DISABLED  # Allow quick scaling down
+
+  # Scheduled Scaling for Known Low Traffic Periods
+  NightScaleDownSchedule:
+    Type: AWS::AutoScaling::ScheduledAction
+    Properties:
+      AutoScalingGroupName: !Ref CostOptimizedASG
+      DesiredCapacity: 0  # Scale down at night
+      MinSize: 0
+      MaxSize: 2
+      Recurrence: "0 2 * * *"  # 2 AM daily
+      TimeZone: "UTC"
+
+  MorningScaleUpSchedule:
+    Type: AWS::AutoScaling::ScheduledAction
+    Properties:
+      AutoScalingGroupName: !Ref CostOptimizedASG
+      DesiredCapacity: 1  # Scale up in the morning
+      MinSize: 1
+      MaxSize: 2
+      Recurrence: "0 7 * * *"  # 7 AM daily
+      TimeZone: "UTC"
+
+  # Cost Alarm for unexpected charges
+  HighCostAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${AWS::StackName}-high-cost
+      AlarmDescription: Alert when monthly costs exceed threshold
+      MetricName: EstimatedCharges
+      Namespace: AWS/Billing
+      Statistic: Maximum
+      Period: 86400  # Daily
+      EvaluationPeriods: 1
+      Threshold: 50.0  # $50/month threshold
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Currency
+          Value: USD
+      AlarmActions:
+        - !Ref CostAlertsTopic
+
+  # SNS Topic for cost alerts
+  CostAlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${AWS::StackName}-cost-alerts
+      DisplayName: Agrifrika Cost Alerts
+
+  # Billing alert subscription
+  CostAlertsSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref CostAlertsTopic
+      Protocol: email
+      Endpoint: admin@agrifrika.com  # Change to your email
+
+Outputs:
+  CostOptimizedASG:
+    Description: Cost Optimized Auto Scaling Group
+    Value: !Ref CostOptimizedASG
+    Export:
+      Name: !Sub ${AWS::StackName}-cost-asg
+
+  CostOptimizedCapacityProvider:
+    Description: Cost Optimized Capacity Provider
+    Value: !Ref CostOptimizedCapacityProvider
+    Export:
+      Name: !Sub ${AWS::StackName}-cost-cp
+
+  CostAlertsTopic:
+    Description: Cost Alerts SNS Topic
+    Value: !Ref CostAlertsTopic
+
+  EstimatedMonthlyCost:
+    Description: Estimated monthly cost for t3.small single instance
+    Value: "~$15-20/month for single t3.small instance + ALB (~$16) + other services (~$10) = ~$40-45/month total"

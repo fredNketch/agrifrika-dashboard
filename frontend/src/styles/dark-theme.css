@@ -1,0 +1,314 @@
+/* Mode sombre amélioré avec des couleurs attrayantes */
+
+/* Couleurs de base pour le mode sombre */
+:root.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-primary: rgba(148, 163, 184, 0.15);
+  --accent-primary: #3b82f6;
+  --accent-secondary: #8b5cf6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+}
+
+/* Amélioration des cards en mode sombre */
+.dark .dashboard-card {
+  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid var(--border-primary);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.4), 
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(148, 163, 184, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+.dark .dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(148, 163, 184, 0.15);
+}
+
+/* Amélioration des textes en mode sombre */
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-gray-700 {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.dark .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+/* Correction spécifique pour les couleurs des badges */
+.dark .text-green-700,
+.dark .text-green-800 {
+  color: #34d399 !important;
+}
+
+.dark .text-blue-700,
+.dark .text-blue-800 {
+  color: #60a5fa !important;
+}
+
+.dark .text-red-700,
+.dark .text-red-800 {
+  color: #f87171 !important;
+}
+
+.dark .text-purple-700,
+.dark .text-purple-800 {
+  color: #a78bfa !important;
+}
+
+.dark .text-orange-700,
+.dark .text-orange-800 {
+  color: #fbbf24 !important;
+}
+
+.dark .text-yellow-700,
+.dark .text-yellow-800 {
+  color: #fde047 !important;
+}
+
+.dark .text-indigo-700,
+.dark .text-indigo-800 {
+  color: #818cf8 !important;
+}
+
+/* Amélioration des gradients pour les éléments colorés */
+.dark .bg-gradient-to-br.from-blue-50.to-blue-100,
+.dark .bg-gradient-to-r.from-blue-50.to-blue-100 {
+  background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.25)) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60a5fa !important;
+}
+
+.dark .bg-gradient-to-br.from-green-50.to-green-100,
+.dark .bg-gradient-to-r.from-green-50.to-green-100 {
+  background: linear-gradient(to bottom right, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.25)) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #34d399 !important;
+}
+
+.dark .bg-gradient-to-br.from-red-50.to-red-100,
+.dark .bg-gradient-to-r.from-red-50.to-red-100 {
+  background: linear-gradient(to bottom right, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.25)) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #f87171 !important;
+}
+
+.dark .bg-gradient-to-br.from-purple-50.to-purple-100,
+.dark .bg-gradient-to-r.from-purple-50.to-purple-100 {
+  background: linear-gradient(to bottom right, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.25)) !important;
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  color: #a78bfa !important;
+}
+
+.dark .bg-gradient-to-br.from-yellow-50.to-yellow-100,
+.dark .bg-gradient-to-r.from-yellow-50.to-yellow-100 {
+  background: linear-gradient(to bottom right, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.25)) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  color: #fde047 !important;
+}
+
+.dark .bg-gradient-to-br.from-orange-50.to-orange-100,
+.dark .bg-gradient-to-r.from-orange-50.to-orange-100 {
+  background: linear-gradient(to bottom right, rgba(249, 115, 22, 0.15), rgba(249, 115, 22, 0.25)) !important;
+  border-color: rgba(249, 115, 22, 0.4) !important;
+  color: #fb923c !important;
+}
+
+.dark .bg-gradient-to-br.from-indigo-50.to-indigo-100,
+.dark .bg-gradient-to-r.from-indigo-50.to-indigo-100 {
+  background: linear-gradient(to bottom right, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.25)) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  color: #818cf8 !important;
+}
+
+/* Amélioration des éléments blancs en mode sombre */
+.dark .bg-white {
+  background: rgba(30, 41, 59, 0.9) !important;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: var(--text-primary) !important;
+}
+
+.dark .bg-gray-50 {
+  background: rgba(51, 65, 85, 0.6) !important;
+  color: var(--text-secondary) !important;
+}
+
+.dark .bg-gray-100 {
+  background: rgba(51, 65, 85, 0.8) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Amélioration des backgrounds gradient */
+.dark .bg-gradient-to-r.from-gray-50.to-gray-100 {
+  background: linear-gradient(to right, rgba(51, 65, 85, 0.6), rgba(51, 65, 85, 0.8)) !important;
+}
+
+.dark .bg-gradient-to-br.from-gray-50.to-gray-100 {
+  background: linear-gradient(to bottom right, rgba(51, 65, 85, 0.6), rgba(51, 65, 85, 0.8)) !important;
+}
+
+.dark .bg-gradient-to-t.from-gray-50.to-white {
+  background: linear-gradient(to top, rgba(51, 65, 85, 0.6), rgba(30, 41, 59, 0.8)) !important;
+}
+
+/* Amélioration des badges et indicateurs */
+.dark .bg-green-100.text-green-800,
+.dark .bg-green-50 {
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+.dark .bg-orange-100.text-orange-800,
+.dark .bg-orange-50 {
+  background: rgba(245, 158, 11, 0.25) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+}
+
+.dark .bg-red-100.text-red-800,
+.dark .bg-red-50 {
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+
+.dark .bg-purple-100.text-purple-800,
+.dark .bg-purple-50 {
+  background: rgba(139, 92, 246, 0.25) !important;
+  color: #a78bfa !important;
+  border: 1px solid rgba(139, 92, 246, 0.4) !important;
+}
+
+.dark .bg-blue-100.text-blue-800,
+.dark .bg-blue-50 {
+  background: rgba(59, 130, 246, 0.25) !important;
+  color: #60a5fa !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+}
+
+.dark .bg-yellow-100.text-yellow-800,
+.dark .bg-yellow-50 {
+  background: rgba(245, 158, 11, 0.25) !important;
+  color: #fde047 !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+}
+
+.dark .bg-indigo-100.text-indigo-800,
+.dark .bg-indigo-50 {
+  background: rgba(99, 102, 241, 0.25) !important;
+  color: #818cf8 !important;
+  border: 1px solid rgba(99, 102, 241, 0.4) !important;
+}
+
+/* Amélioration des bordures */
+.dark .border-gray-200 {
+  border-color: var(--border-primary) !important;
+}
+
+.dark .border-gray-300 {
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+/* Effets de glow pour les éléments interactifs */
+.dark .dashboard-card:hover {
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(148, 163, 184, 0.1),
+    0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+/* Correction spécifique pour les textes dans les gauges CircularGauge */
+.dark svg text {
+  fill: var(--text-primary) !important;
+}
+
+.dark .bg-gradient-to-r.from-gray-700.to-gray-900 {
+  background: linear-gradient(to right, #e2e8f0, #f8fafc) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Correction pour les textes sur fond de cards sombres */
+.dark .dashboard-card .text-gray-800,
+.dark .dashboard-card .text-gray-700,
+.dark .dashboard-card .text-gray-600 {
+  color: var(--text-primary) !important;
+}
+
+.dark .dashboard-card .text-sm.text-gray-600,
+.dark .dashboard-card .text-xs.text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .dashboard-card .text-xs.text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+/* Correction pour les labels centraux des gauges */
+.dark .text-center .font-medium.text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-center .text-xs.text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+/* Correction pour tous les titres de dashboard */
+.dark h3.dashboard-title,
+.dark .dashboard-title {
+  color: var(--text-primary) !important;
+}
+
+.dark h4.font-semibold.text-gray-800,
+.dark h4.font-bold.text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+/* Correction pour les titres dans les sections */
+.dark .font-semibold.text-gray-800,
+.dark .font-bold.text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+.dark .border-b.pb-2 {
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+/* Animation subtile de particules pour le background */
+.dark .dashboard1-layout::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}

@@ -1,0 +1,135 @@
+{
+  "family": "agrifrika-backend",
+  "networkMode": "bridge",
+  "requiresCompatibilities": ["EC2"],
+  "cpu": 256,
+  "memory": 512,
+  "executionRoleArn": "${EXECUTION_ROLE_ARN}",
+  "taskRoleArn": "${TASK_ROLE_ARN}",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "${ECR_REPOSITORY_URI}/agrifrika-backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 0,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "ENV",
+          "value": "production"
+        },
+        {
+          "name": "DEBUG",
+          "value": "false"
+        },
+        {
+          "name": "HOST",
+          "value": "0.0.0.0"
+        },
+        {
+          "name": "PORT",
+          "value": "8000"
+        },
+        {
+          "name": "AWS_SECRET_NAME",
+          "value": "${SECRET_NAME}"
+        },
+        {
+          "name": "AWS_DEFAULT_REGION",
+          "value": "${AWS_REGION}"
+        },
+        {
+          "name": "ECS_CLUSTER_NAME",
+          "value": "${CLUSTER_NAME}"
+        },
+        {
+          "name": "GOOGLE_SHEETS_CREDENTIALS_PATH",
+          "value": "/app/config/credentials/google-sheets-new-credentials.json"
+        },
+        {
+          "name": "GOOGLE_ANALYTICS_CREDENTIALS_PATH",
+          "value": "/app/config/credentials/google-analytics-credentials.json"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "BASECAMP_TOKEN",
+          "valueFrom": "${SECRET_ARN}:BASECAMP_TOKEN::"
+        },
+        {
+          "name": "BASECAMP_ACCOUNT_ID",
+          "valueFrom": "${SECRET_ARN}:BASECAMP_ACCOUNT_ID::"
+        },
+        {
+          "name": "BASECAMP_PROJECT_ID",
+          "valueFrom": "${SECRET_ARN}:BASECAMP_PROJECT_ID::"
+        },
+        {
+          "name": "FACEBOOK_ACCESS_TOKEN",
+          "valueFrom": "${SECRET_ARN}:FACEBOOK_ACCESS_TOKEN::"
+        },
+        {
+          "name": "FACEBOOK_PAGE_ID",
+          "valueFrom": "${SECRET_ARN}:FACEBOOK_PAGE_ID::"
+        },
+        {
+          "name": "SECRET_KEY",
+          "valueFrom": "${SECRET_ARN}:SECRET_KEY::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/${CLUSTER_NAME}/backend",
+          "awslogs-region": "${AWS_REGION}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8000/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "mountPoints": [
+        {
+          "sourceVolume": "efs-storage",
+          "containerPath": "/app/data",
+          "readOnly": false
+        }
+      ]
+    }
+  ],
+  "volumes": [
+    {
+      "name": "efs-storage",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "${EFS_FILE_SYSTEM_ID}",
+        "rootDirectory": "/",
+        "transitEncryption": "ENABLED",
+        "authorizationConfig": {
+          "iam": "ENABLED"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "key": "Environment",
+      "value": "${ENVIRONMENT}"
+    },
+    {
+      "key": "Application",
+      "value": "agrifrika-dashboard"
+    }
+  ]
+}
