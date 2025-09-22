@@ -20,8 +20,8 @@ COPY basecamp_todos/ ./basecamp_todos/
 COPY start_server.py .
 
 # Copy entrypoint scripts
-COPY ../docker-entrypoint.sh /docker-entrypoint.sh
-COPY ../aws/scripts/aws-entrypoint.sh /aws-entrypoint.sh
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+COPY ./aws-entrypoint.sh /aws-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh /aws-entrypoint.sh
 
 # Create non-root user with home directory
@@ -39,6 +39,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD curl --fail http://localhost:8000/health || exit 1
 
-# Use entrypoint script for secure startup
-ENTRYPOINT ["/docker-entrypoint.sh"]
+# Start the application directly
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

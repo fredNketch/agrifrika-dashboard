@@ -20,7 +20,7 @@ Parameters:
 
 Conditions:
   HasDomain: !Not [!Equals [!Ref DomainName, ""]]
-  NeedsCertificate: !And [!Condition HasDomain, !Equals [!Ref CertificateArn, ""]]
+  NeedsCertificate: !And [!Condition HasDomain, !Not [!Equals [!Ref CertificateArn, ""]]]
 
 Resources:
   # VPC and Networking

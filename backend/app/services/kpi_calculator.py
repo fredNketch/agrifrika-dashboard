@@ -15,8 +15,8 @@ class PublicEngagementCalculator:
     ENGAGEMENT_POINTS_SYSTEM = {
         "vues": {
             "points_par_unite": 1,
-            "objectif_mensuel": 10000,
-            "points_objectif": 10000
+            "objectif_mensuel": 40000,
+            "points_objectif": 40000
         },
         "likes_reactions": {
             "points_par_unite": 1,
@@ -65,17 +65,17 @@ class PublicEngagementCalculator:
         },
         "apparition_recherches": {
             "points_par_unite": 1,
-            "objectif_mensuel": 500,
-            "points_objectif": 500
+            "objectif_mensuel": 2000,
+            "points_objectif": 2000
         },
         "impressions_linkedin": {
             "points_par_unite": 1,
-            "objectif_mensuel": 10000,
-            "points_objectif": 10000
+            "objectif_mensuel": 15000,
+            "points_objectif": 15000
         }
     }
     
-    TOTAL_OBJECTIF_MENSUEL = 28115  # Somme de tous les points_objectif
+    TOTAL_OBJECTIF_MENSUEL = 64615  # Somme de tous les points_objectif
     
     @classmethod
     def calculate_score(cls, donnees_mensuelles: Dict[str, Any]) -> Dict[str, Any]:

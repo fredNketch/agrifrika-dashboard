@@ -19,11 +19,10 @@ httpx==0.25.2
 google-api-python-client==2.108.0
 google-auth==2.23.4
 google-oauth2-tool==0.0.3
-google-analytics-data==0.17.4
+google-analytics-data==0.18.19
 
 # Base de données (optionnel pour cache)
 sqlalchemy==2.0.23
-sqlite3  # Inclus avec Python
 
 # Utilitaires
 python-dateutil==2.8.2

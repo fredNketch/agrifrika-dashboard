@@ -27,7 +27,7 @@ const TeamAvailability: React.FC<TeamAvailabilityProps> = ({ className = '' }) =
   const fetchTeamAvailability = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://192.168.1.45:8000/api/v1/dashboard2/team-availability', {
+      const response = await fetch('https://dashboard.agrifrika.com/api/v1/dashboard2/team-availability', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

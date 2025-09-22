@@ -35,7 +35,7 @@ const FacebookVideo: React.FC<FacebookVideoProps> = ({ className = '' }) => {
       abortControllerRef.current = new AbortController();
       setLoading(true);
       
-      const response = await fetch('http://192.168.1.45:8000/api/v1/dashboard2/facebook-video', {
+      const response = await fetch('https://dashboard.agrifrika.com/api/v1/dashboard2/facebook-video', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

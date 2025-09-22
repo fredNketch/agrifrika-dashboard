@@ -23,7 +23,7 @@ const ActionPlan: React.FC<ActionPlanProps> = ({ className = '' }) => {
   const fetchActionPlan = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://192.168.1.45:8000/api/v1/dashboard2/action-plan', {
+      const response = await fetch('https://dashboard.agrifrika.com/api/v1/dashboard2/action-plan', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

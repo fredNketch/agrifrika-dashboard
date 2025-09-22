@@ -92,7 +92,7 @@ Resources:
         Fn::Sub: ${StackName}-task-role
       ContainerDefinitions:
         - Name: backend
-          Image: !Sub ${ECRRepositoryURI}/agrifrika-backend:${BackendImageTag}
+          Image: !Sub ${ECRRepositoryURI}/${AWS::StackName}-backend:${BackendImageTag}
           Essential: true
           PortMappings:
             - ContainerPort: 8000
@@ -190,7 +190,7 @@ Resources:
         Fn::Sub: ${StackName}-task-role
       ContainerDefinitions:
         - Name: frontend
-          Image: !Sub ${ECRRepositoryURI}/agrifrika-frontend:${FrontendImageTag}
+          Image: !Sub ${ECRRepositoryURI}/${AWS::StackName}-frontend:${FrontendImageTag}
           Essential: true
           PortMappings:
             - ContainerPort: 80

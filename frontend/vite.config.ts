@@ -14,6 +14,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
+        main: resolve(__dirname, 'index.html'),
         dashboard1: resolve(__dirname, 'src/dashboard1/index.html'),
         dashboard2: resolve(__dirname, 'src/dashboard2/index.html'),
       },

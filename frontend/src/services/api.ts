@@ -14,7 +14,7 @@ import type {
   TodosData
 } from '../types';
 
-const API_BASE_URL = 'http://192.168.1.45:8000/api/v1';
+const API_BASE_URL = 'https://dashboard.agrifrika.com/api/v1';
 
 interface APIResponse<T> {
   success: boolean;

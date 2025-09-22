@@ -26,7 +26,7 @@ const WeeklyPlanning: React.FC<WeeklyPlanningProps> = ({ className = '' }) => {
   const fetchWeeklyPlanning = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://192.168.1.45:8000/api/v1/dashboard2/weekly-planning', {
+      const response = await fetch('https://dashboard.agrifrika.com/api/v1/dashboard2/weekly-planning', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
